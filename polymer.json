@@ -1,0 +1,33 @@
+{
+  "entrypoint": "index.html",
+  "fragments": [
+    "src/pizza/ps-app-pizza.html",
+    "src/pizza/add/ps-pizza-add.html",
+    "src/pizza/details/ps-pizza-details.html",
+    "src/core/pages/ps-not-found.html"
+  ],
+  "extraDependencies": [
+    "manifest.json",
+    "bower_components/webcomponentsjs/webcomponents-loader.js",
+    "bower_components/page/page.js"
+  ],
+  "shell": "src/ps-app.html",
+  "sources": [
+    "images/**/*",
+    "src/**/*"
+  ],
+  "lint": {
+    "rules": [
+      "polymer-2"
+    ]
+  },
+  "autoBasePath": true,
+  "builds": [
+    {
+      "preset": "es5-bundled"
+    },
+    {
+      "preset": "es6-bundled"
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../core/components/ps-img/ps-img.html">
+<link rel="import" href="../../core/styles/ps-styles.html">
+
+<dom-module id="ps-pizza-list-card">
+    <template>
+        <style include="ps-styles">
+            :host {
+                --paper-card-header-color: var(--color-secondary);
+            }
+
+            .ps-pizza-list-card {
+                cursor: pointer;
+                color: var(--color-text--primary);
+                border: 1px solid;
+                border-color: var(--color-primary--dark);
+            }
+
+            .ps-pizza-list-card[hover] {
+                border-color: var(--color-secondary--light);
+            }
+
+            .ps-pizza-list-card__image {
+                padding: var(--padding-medium);
+            }
+
+            .ps-pizza-list-card__header {
+                text-align: center;
+                background: var(--color-primary--dark);
+                color: var(--color-text--primary);
+                margin: 0;
+                line-height: 3em;
+            }
+        </style>
+
+        <paper-card class="ps-pizza-list-card" on-click="_goToDetails" on-mouseover="_onMouseOver" on-mouseout="_onMouseOut" hover$="[[_hover]]">
+            <!-- Images will be too big on mobile, use properties sizes and srcset to adapt them to the viewport -->
+            <ps-img class="ps-pizza-list-card__image" src="[[_imgSrc]]" lazy-src="[[_imgLazySrc]] "></ps-img>
+            <h3 class="ps-pizza-list-card__header ">[[item.name]]</h3>
+        </paper-card>
+
+    </template>
+    <script>
+        (function () {
+
+            /**
+             * We will recieve a single path for every pizza img,
+             * and by naming convention we know that there is 
+             * a good image, called `${pizza.img}400.png` and a
+             * small image that will load very fast called
+             * `${pizza.img}400-min.png` so we configure those
+             * constants at the beggining of the module.
+             */
+            const EXTENSION = '.png';
+            const SIZE = 400;
+            const MIN_KEYWORD = '-min';
+
+            class PsPizzaListCard extends Polymer.Element {
+                static get is() {return 'ps-pizza-list-card';}
+                /**
+                 * This computed properties will only trigger once,
+                 * since they are tyring to observe a complex path.
+                 * 
+                 * The correct way would be to create a complex observer
+                 * that updated _imgSrc and _imgLazySrc on item.img change. 
+                 */
+                static get properties() {
+                    return {
+                        pizza: Object,
+                        _imgSrc: {
+                            type: String,
+                            computed: '_getImgSrc(pizza.img)'
+                        },
+                        _imgLazySrc: {
+                            type: String,
+                            computed: '_getImgLazySrc(pizza.img)'
+                        },
+                        _hover: Boolean
+                    };
+                }
+                _getImgSrc(image) {
+                    return image + SIZE + MIN_KEYWORD + EXTENSION;
+                }
+                _getImgLazySrc(image) {
+                    return image + SIZE + EXTENSION;
+                }
+                _onMouseOver() {
+                    this._hover = true;
+                }
+                _onMouseOut() {
+                    this._hover = false;
+                }
+                /**
+                 * When clicking on an image we want to navigate
+                 * to its details, for that we use page 
+                 */
+                _goToDetails() {
+                    page.show(`/pizzas/${this.pizza.id}`);
+                }
+            }
+            customElements.define(PsPizzaListCard.is, PsPizzaListCard)
+
+        }())
+    </script>
+</dom-module>

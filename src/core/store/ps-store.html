@@ -1,0 +1,156 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+
+<!-- 
+    An HTMLElement cannot be singleton since every time
+    we use it in the DOM a new instance will be created,
+    therefore, if we wan't to manage the app state from
+    one point, we must implement the monostate patter.
+
+    The monostate pattern consist on creating an instance
+    of the element the first time it is created, and storing the
+    state into that instance, which in this case will be available
+    in a clousure.
+
+    We will create a store that will contain all the state of
+    our app, inside an object called state, where users will
+    be able to record and read data.
+
+    If we want users of the store to get notified about changes
+    we need to use the observer pattern, and with the help of
+    Polymer data system it is not so hard.
+
+    We will create a mixin that will implement our specific stores
+    and that mixin will register them as subscribers of the instance
+    on the connectedCallback and unregister them on the disconnectedCallback.
+
+    Every time a subscriber is registered, we store a reference to it so we
+    can later notify it about changes, and we will give it an initial reference
+    to the current state.
+
+    Whenever there is a change on the state, we will notify all subscribers with
+    the path of the change, and if they are observing that specific change, then
+    the notification will take effect.
+
+    For updating the state property a specific store is using, they must first
+    get a reference to that state by creating a ps-store instance and binding
+    to the state property, with a one-way data binding, later they can call
+    `this.set('state.propertypath', value)` to update its own reference and propagate
+    the changes to the store.
+ -->
+
+<dom-module id="ps-store">
+    <script>
+
+        (function () {
+
+            /**
+             * Define an instance to hold the state of the store,
+             * use an IIFE module so the insance doesn't lack to
+             * window.
+             */
+            let instance = null;
+
+            class PsStore extends Polymer.Element {
+                static get is() {return 'ps-store';}
+                static get properties() {
+                    return {
+                        /**
+                         * Property in which we will store 
+                         * the app state.
+                         */
+                        state: {
+                            type: Object,
+                            value: () => ({}),
+                        },
+                        /**
+                         * Array to keep the record of
+                         * subscribers
+                         */
+                        _subscribers: {
+                            type: Array,
+                            value: () => []
+                        }
+                    };
+                }
+                static get observers() {
+                    return [
+                        /**
+                         * Whenever any property of state 
+                         * changes, we will call _stateChanged
+                         */
+                        '_stateChanged(state.*)'
+                    ]
+                }
+                constructor() {
+                    super();
+                    /**
+                     * If the instance is not yet initialized,
+                     * we make it reference this, so the store
+                     * methods and properties are shared.
+                     */
+                    if (!instance) {
+                        instance = this;
+                    }
+                }
+                /**
+                 * Register a subscriber and give it 
+                 * an initial state.
+                 */
+                register(subscriber) {
+                    instance._subscribers.push(subscriber);
+                    subscriber.set('state', instance.state);
+                }
+                /**
+                 * Unregister a subscriber to stop 
+                 * notifying it about changes
+                 */
+                unregister(subscriber) {
+                    var index = instance._subscribers.indexOf(subscriber);
+                    if (index !== -1) {
+                        instance._subscribers.splice(index, 1);
+                    }
+                }
+                /**
+                 * Notify all subscribers about the specific 
+                 * change in the state so they update its local
+                 * references.
+                 */
+                _stateChanged(change) {
+                    change && instance._subscribers.map((subscriber) => {
+                        subscriber.notifyPath(change.path);
+                    });
+                }
+            }
+            customElements.define(PsStore.is, PsStore);
+
+            /**
+             * All elements that want to subscribe to the store 
+             * must implement this mixin.
+             */
+            PsStoreMixin = (superClass) => {
+                return class extends superClass {
+                    connectedCallback() {
+                        super.connectedCallback();
+                        /**
+                         * If by any change the instance has not been
+                         * initialized when an element tries to register
+                         * we create a new one and add it to the dom so 
+                         * it gets created.
+                         */
+                        if (!instance) {
+                            document.body.appendChild(
+                                document.createElement(PsStore.is)
+                            );
+                        }
+                        instance.register(this);
+                    }
+                    disconnectedCallback() {
+                        super.disconnectedCallback();
+                        instance.unregister(this);
+                    }
+                }
+            }
+        }());
+
+    </script>
+</dom-module>

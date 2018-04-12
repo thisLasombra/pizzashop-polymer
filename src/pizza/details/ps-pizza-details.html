@@ -1,0 +1,49 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<!-- <link rel="import" href="../ps-pizza-store.html"> -->
+
+<dom-module id="ps-pizza-details">
+    <template>
+        <!-- <ps-pizza-store id="pizzaStore"></ps-pizza-store> -->
+        <h2>pizza details [[pizzaId]]</h2>
+        <div>[[pizza.name]]</div>
+    </template>
+
+    <script>
+        class PsPizzaDetails extends Polymer.Element {
+            static get is() {return 'ps-pizza-details';}
+            static get properties() {
+                return {
+                    pizzaId: {
+                        type: String,
+                        observer: '_pizzaIdChanged'
+                    }
+                }
+            }
+            _pizzaIdChanged(id) {
+                const pizza = this._findPizzaById(id);
+                /**
+                 * We can not automatically redirect to 404
+                 * from the router, since this component matches
+                 * /:id we must check if there is a pizza and
+                 * handle that case manually. 
+                 */
+                if (!pizza) {
+                    this._goToList();
+                }
+                this.pizza = pizza;
+            }
+            _findPizzaById(id) {
+                // Use double equals since matching String against Number
+                return (this.pizzas && id && this.pizzas.find((pizza) => pizza.id == id));
+
+                // Below using pizza-store
+
+                // return id && this.$.pizzaStore.findById(id);
+            }
+            _goToList() {
+                page.show('/pizzas');
+            }
+        }
+        customElements.define(PsPizzaDetails.is, PsPizzaDetails);
+    </script>
+</dom-module>

@@ -1,0 +1,97 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="/bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../core/routing/page-js.html">
+<link rel="import" href="./list/ps-pizza-list.html">
+
+<!-- Explained in src/core/routing/ps-routing-mixin.html -->
+
+<dom-module id="ps-pizza-routing">
+    <template>
+
+        <style>
+            iron-pages {
+                height: 100%;
+            }
+        </style>
+
+        <iron-pages selected="[[page]]" attr-for-selected="name">
+            <ps-pizza-list name="list" pizzas="[[pizzas]]"></ps-pizza-list>
+            <ps-pizza-add name="add" pizzas="{{pizzas}}"></ps-pizza-add>
+            <ps-pizza-details name="details" pizza-id="{{id}}" pizzas="[[pizzas]]"></ps-pizza-details>
+            <ps-not-found name="fallback"></ps-not-found>
+        </iron-pages>
+
+    </template>
+    <script>   
+
+        class PsPizzaRouting extends Polymer.Element {
+            static get is() {return 'ps-pizza-routing';}
+            static get properties() {
+                return {
+                    page: {
+                        type: String,
+                        observer: '_pageChanged'
+                    },
+                    routes: {
+                        type: Object,
+                        value: {
+                            add: 'add/ps-pizza-add.html',
+                            details: 'details/ps-pizza-details.html',
+                            list: 'list/ps-pizza-list.html',
+                            fallback: '../core/pages/ps-not-found.html'
+                        },
+                        readOnly: true,
+                    },
+                    defaultPage: {
+                        type: String,
+                        value: 'list',
+                        readOnly: true,
+                    },
+                    id: String,
+                };
+            }
+            ready() {
+                super.ready();
+                this._setupRoutes();
+            }
+            _setupRoutes() {
+                page('/pizzas', () => this.page = 'list');
+                page('/pizzas/add', () => this.page = 'add');
+                page('/pizzas/:id', (ctx, next) => {
+                    this.id = ctx.params.id;
+                    this.page = 'details'
+                });
+                page('/pizzas/*', (ctx, next) => {
+                    if (ctx.handled) {
+                        ctx.handled = false;
+                        next();
+                    }
+                    else {
+                        this.page = 'fallback';
+                    }
+                });
+                page.stop();
+                page.start();
+            }
+            _pageChanged() {
+                if (this.page === this.defaultPage) {
+                    return;
+                }
+                const componentPath = this._resolveComponent(this.page);
+                Polymer.importHref(
+                    this.resolveUrl(componentPath),
+                    null, null, true
+                );
+            }
+            _resolveComponent(page) {
+                if (!this.routes[page]) {
+                    return this.routes.fallback;
+                }
+                return this.routes[page];
+            }
+        }
+        customElements.define(PsPizzaRouting.is, PsPizzaRouting);
+
+    </script>
+</dom-module>

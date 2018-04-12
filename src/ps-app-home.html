@@ -1,0 +1,51 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="./core/styles/ps-styles.html">
+
+<dom-module id="ps-app-home">
+    <template>
+
+        <style include="ps-styles">
+            .ps-home {
+                align-items: center;
+                justify-content: space-around;
+            }
+
+            .ps-home__title {
+                color: var(--color-primary);
+            }
+
+            .ps-home__logo {
+                max-width: 80%;
+            }
+
+            .ps-home__subtitle {
+                justify-content: center;
+                align-items: center;
+                text-decoration: none;
+                color: var(--color-secondary);
+            }
+
+            .ps-home__subtitle__logo {
+                width: 2.5rem;
+                height: 2.5rem;
+            }
+        </style>
+
+        <div class="vertical fill ps-home">
+            <h2 class="ps-home__title">Pizza Shop Polymer 2</h2>
+            <img class="ps-home__logo" src="/images/home/polymer-logo.png">
+            <a class="horizontal ps-home__subtitle" target="_blank" href="https://github.com/isidrok/pizzashop-polymer2">
+                <img class="ps-home__subtitle__logo" src="/images/home/github-logo.png"> Source
+            </a>
+        </div>
+
+    </template>
+    <script>
+
+        class PsAppHome extends Polymer.Element {
+            static get is() {return 'ps-app-home';}
+        }
+        customElements.define(PsAppHome.is, PsAppHome);
+
+    </script>
+</dom-module>

@@ -1,0 +1,237 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/iron-form/iron-form.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/bower_components/paper-input/paper-input.html">
+<link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="/bower_components/paper-item/paper-item.html">
+<link rel="import" href="/bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="/bower_components/iron-selector/iron-multi-selectable.html">
+<link rel="import" href="/bower_components/polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="../../core/styles/ps-styles.html">
+<!-- <link rel="import" href="../ps-pizza-store.html"> -->
+
+<!-- 
+    This component is terrible, and we could refactorize it to be much better
+    read the coments on the template below and give it a try, then move or remove
+    all necessary dependencies, css and class methods or properties.
+ -->
+
+
+<dom-module id="ps-pizza-add">
+    <template>
+        <style include="ps-styles">
+            .ps-pizza-add {
+                padding: var(--padding-medium);
+            }
+
+            .ps-pizza-add__overlay {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+
+            .ps-pizza-add__overlay[closed] {
+                display: none;
+            }
+
+
+            .ps-pizza-add__row {
+                flex-wrap: wrap;
+                justify-content: space-between;
+                padding-bottom: var(--padding-medium);
+            }
+
+            .ps-pizza-add__row__input {
+                min-width: 300px;
+                width: 100%;
+            }
+
+            @media only screen and (min-width: 920px) {
+                .ps-pizza-add__row__input {
+                    width: 49%;
+                }
+            }
+
+            .ps-pizza-add__row__input__list {
+                position: absolute;
+                min-width: 300px;
+                max-height: 150px;
+                overflow-y: scroll;
+                box-shadow: var(--shadow-elevation-4dp_-_box-shadow);
+                z-index: 1;
+            }
+
+            .ps-pizza-add__row__input__list[closed] {
+                display: none;
+            }
+
+            img {
+                padding: var(--padding-medium) 0;
+                width: fit-content;
+                margin: auto;
+            }
+
+            paper-item {
+                cursor: pointer;
+            }
+
+            .iron-selected {
+                color: var(--color-primary--dark);
+            }
+
+            paper-input {
+                --paper-input-container-focus-color: var(--color-primary);
+            }
+
+            paper-button {
+                width: 20%;
+                margin: auto;
+                background-color: var(--color-secondary);
+                color: var(--color-text--secondary);
+            }
+
+            input[type=file] {
+                display: none;
+            }
+        </style>
+
+        <!-- <ps-pizza-store id="pizzaStore"></ps-pizza-store> -->
+        <!-- 
+            change iron-ajax by <ps-ingredients-service ingredients="{{ingredients}}"></ps-ajax-service>
+        -->
+        <iron-ajax auto url="[[_baseUrl]]/ingredients" last-response="{{ingredients}}"></iron-ajax>
+        <iron-form id="form" on-iron-form-presubmit="_onPreSubmit" on-iron-form-response="_onResponse">
+            <!-- This overlay is needed by the multiselect, what is it doing here... -->
+            <div class="ps-pizza-add__overlay" on-click="_closeIngredients" closed$="[[_listClosed]]"></div>
+            <form class="ps-pizza-add vertical" method="post" action="[[_baseUrl]]/pizzas" enctype="multipart/form-data">
+                <div class="ps-pizza-add__row horizontal">
+                    <paper-input class=" ps-pizza-add__row__input" autofocus label="*Name:" name="name" auto-validate required error-message="Field is required"></paper-input>
+                    <div class="vertical ps-pizza-add__row__input">
+                        <!-- 
+                            The next html is itself a multiselector component, we could add it to the core and give it an interface such as:
+                            
+                            <ps-multiselect attr-for-selected="id" attr-to-show="name" items="[[ingredients]]" selected-items="{{selectedIngredients}}">
+                                <paper-input slot="input" ... ></paper-input>                                
+                            </ps-multiselect>
+                         -->
+                        <paper-input label="Ingredients:" name="ingredients" value="[[selectedIngredientsText]]" readonly on-click="_onIngredientsClick"></paper-input>
+                        <div>
+                            <paper-listbox class="ps-pizza-add__row__input__list" attr-for-selected="id" selected-items="{{selectedIngredients}}" multi
+                                slot="dropdown-content" closed$="[[_listClosed]]">
+                                <dom-repeat items="[[ingredients]]">
+                                    <template>
+                                        <paper-item id="[[item.id]]">[[item.name]]</paper-item>
+                                    </template>
+                                </dom-repeat>
+                            </paper-listbox>
+                        </div>
+                        <!-- End of component -->
+                    </div>
+                </div>
+                <!-- 
+                    Here is another component we can use for file upload and preview, something like:
+                    <ps-uploader type="image">
+                        <paper-input slot="input" ...> </paper-input>  # Value would be set automatically to the file name
+                        <img slot="preview"></img>
+                    </ps-uploader>
+                 -->
+                <paper-input name="img" label="*Picture:" value="[[_img.name]]" on-click="_onImgClick" required error-message="Field is required"
+                    readonly></paper-input>
+                <input type="file" id="img" on-change="_setImg"></input>
+                <img src="[[_imgSrc]]"></img>
+                <paper-button raised on-click="_submit">Create</paper-button>
+            </form>
+        </iron-form>
+
+    </template>
+
+    <script>
+        class PsPizzaAdd extends Polymer.Element {
+            static get is() {return 'ps-pizza-add';}
+            static get properties() {
+                return {
+                    _baseUrl: {
+                        type: String,
+                        value: PizzaShop.config.baseUrl
+                    },
+                    /**
+                     * pizzas only if not using the store
+                     */
+                    pizzas: {
+                        type: Array,
+                        notify: true,
+                    },
+                    ingredients: {
+                        type: Array,
+                        value: () => []
+                    },
+                    selectedIngredients: {
+                        type: Array,
+                        value: () => [],
+                    },
+                    selectedIngredientsText: {
+                        type: String,
+                        computed: '_ingredientsToString(selectedIngredients.splices)'
+                    },
+                    _img: Object,
+                    _imgSrc: {
+                        type: String,
+                        computed: '_getImgSrc(_img.*)'
+                    },
+                    _listClosed: {
+                        type: Boolean,
+                        value: true
+                    }
+                };
+            }
+            _submit() {
+                this.$.form.submit();
+            }
+            _onPreSubmit() {
+                /**
+                 * Files and form fields must be uploaded together 
+                 * inside a multipart/form-data, for that we need
+                 * to create one from the contents of the form
+                 * and add the image.
+                 */
+                const body = this.$.form.request.body;
+                const data = new FormData();
+                data.set('name', body.name)
+                data.set('ingredients', this._ingredientsToId());
+                data.set('img', this._img, this._img.name);
+                this.$.form.request.body = data;
+            }
+            _onResponse(ev, request) {
+                this.push('pizzas', request.response);
+
+                // below using the store
+
+                // this.$.pizzaStore.addPizza(request.response);
+            }
+            _ingredientsToString() {
+                return this.selectedIngredients.map((el) => el.innerText).join('; ');
+            }
+            _ingredientsToId() {
+                return this.selectedIngredients.map((el) => el.id);
+            }
+            _onImgClick() {
+                this.$.img.click();
+            }
+            _setImg(ev) {
+                this._img = this.$.img.files[0];
+            }
+            _getImgSrc({value}) {
+                return URL.createObjectURL(value);
+            }
+            _closeIngredients() {
+                this._listClosed = true;
+            }
+            _onIngredientsClick() {
+                this._listClosed = !this._listClosed;
+            }
+        }
+        customElements.define(PsPizzaAdd.is, PsPizzaAdd);
+    </script>
+</dom-module>

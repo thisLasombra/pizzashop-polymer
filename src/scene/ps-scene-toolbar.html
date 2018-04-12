@@ -1,0 +1,50 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="/bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="/bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+
+<dom-module id="ps-scene-toolbar">
+    <template>
+
+        <style>
+            h1 {
+                font-size: 1.6rem;
+                width: 100%;
+                text-align: center;
+            }
+
+            app-toolbar {
+                background-color: var(--color-primary--dark);
+                color: var(--color-text--primary);
+            }
+        </style>
+
+        <app-toolbar class="flex">
+            <template is="dom-if" if="{{!menuOpen}}">
+                <paper-icon-button icon="menu" on-click="_onMenuClick"></paper-icon-button>
+            </template>
+            <h1>Polymer Pizza Shop</h1>
+        </app-toolbar>
+
+    </template>
+    <script>
+
+        class PsSceneToolbar extends Polymer.Element {
+            static get is() {return 'ps-scene-toolbar';}
+            static get properties() {
+                return {
+                    menuOpen: {
+                        type: Boolean,
+                        reflectToAttribute: true
+                    }
+                };
+            }
+            _onMenuClick() {
+                this.dispatchEvent(new CustomEvent('menu-button-click'));
+            }
+        }
+        customElements.define(PsSceneToolbar.is, PsSceneToolbar);
+
+    </script>
+</dom-module>

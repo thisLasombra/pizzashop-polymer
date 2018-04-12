@@ -1,0 +1,62 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+
+<dom-module id="ps-img">
+    <template>
+
+        <img id="img" src="[[src]]" data-src$="[[lazySrc]]">
+
+    </template>
+    <script>
+
+        class PsImg extends Polymer.Element {
+            static get is() {return 'ps-img';}
+            static get properties() {
+                return {
+                    src: String,
+                    lazySrc: String
+                };
+            }
+            ready() {
+                super.ready();
+                this._copyAttributes();
+                this._observeLazyImages();
+            }
+
+            _copyAttributes() {
+                Object.values(this.attributes).forEach(({name, value}) => {
+                    this.shadowRoot.querySelector('img').setAttribute(name, value);
+                });
+            }
+
+            _observeLazyImages() {
+                /**
+                 * The intersection observer will notify us when the 
+                 * page changes, and the we will be able to detect if our
+                 * images are in the view port or not, if they are, we
+                 * will change the src by the data-src, so the low quality
+                 * image is changed by the good one. 
+                 */
+                let observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (!entry.isIntersecting) {
+                            return;
+                        }
+                        const lazyImg = entry.target;
+                        this._changeSrc(lazyImg);
+                        observer.unobserve(lazyImg);
+                    });
+                });
+                observer.observe(
+                    this.shadowRoot.querySelector('img')
+                );
+            }
+            _changeSrc(lazyImg) {
+                if (lazyImg.dataset.src) {
+                    lazyImg.src = lazyImg.dataset.src;
+                }
+            }
+        }
+        customElements.define(PsImg.is, PsImg);
+
+    </script>
+</dom-module>

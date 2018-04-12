@@ -1,0 +1,79 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+
+<!-- 
+    Wrapper for the iron-ajax service that will allow us to configure all the request
+    with a default url and intercept the request lifecycle hooks to react to them.
+
+    Events do not need to be re-triggered, since they have the bubbles and composed options
+    set to true. However, if we wan't to get notified about changes by two way binding, we
+    must implement the bindings ourselves, from our properties to the iron-ajax component.
+ -->
+
+<dom-module id="ps-ajax">
+    <template>
+        <iron-ajax id="ironAjax" on-request="_onRequest" on-response="_onResponse" on-error="_onError" url="[[_baseUrl]]/[[url]]">
+        </iron-ajax>
+    </template>
+    <script>
+
+        (function () {
+
+            const protectedAttributes = ['url'];
+
+            class PsAjax extends Polymer.Element {
+                static get is() {return 'ps-ajax';}
+                static get properties() {
+                    return {
+                        _baseUrl: {
+                            type: String,
+                            value: PizzaShop.config.baseUrl
+                        },
+                        url: String
+                    };
+                }
+                ready() {
+                    super.ready();
+                    this._copyAttributes();
+                }
+                generateRequest() {
+                    this.$.ironAjax.generateRequest();
+                }
+                _copyAttributes() {
+                    Object.values(this.attributes).forEach(({name, value}) => {
+                        if (!protectedAttributes.includes(name)) {
+                            this.$.ironAjax.setAttribute(name, value);
+                        }
+                    });
+                }
+                _onRequest() {
+                    this._dispatchAjaxStart();
+                }
+                _onResponse() {
+                    this._dispatchAjaxEnd();
+                }
+                _onError() {
+                    this._dispatchAjaxEnd();
+                }
+                _dispatchAjaxStart() {
+                    this.dispatchEvent(new CustomEvent(
+                        'ps-ajax-start', {
+                            bubbles: true,
+                            composed: true
+                        }
+                    ));
+                }
+                _dispatchAjaxEnd() {
+                    this.dispatchEvent(new CustomEvent(
+                        'ps-ajax-end', {
+                            bubbles: true,
+                            composed: true
+                        }
+                    ));
+                }
+            }
+            customElements.define(PsAjax.is, PsAjax);
+        }());
+
+    </script>
+</dom-module>

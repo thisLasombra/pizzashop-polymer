@@ -1,0 +1,67 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="/bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="./core/routing/page-js.html">
+<link rel="import" href="./core/routing/ps-routing-mixin.html">
+<link rel="import" href="./ps-app-home.html">
+
+<dom-module id="ps-app-routing">
+    <template>
+
+        <style>
+            /** 
+             * Before the component is defined, we can 
+             * use the :not(:defined) selector to build
+             * a layout that resembles the component.
+             *
+             * This selector is not polyfilled, so an alternative
+             * can be to use an attribute inactive, and remove it
+             * on the connectedCallback of the component.
+             */
+
+            ps-app-pizza:not(:defined) {
+                height: 100%;
+                width: 100%;
+                background-color: green;
+                display: block;
+            }
+
+            /**
+             * If we wan't our components to occupy all the content
+             * available we must set iron-pages height to 100%
+             */
+
+            iron-pages {
+                height: 100%;
+            }
+        </style>
+
+        <iron-pages role="main" selected="[[page]]" attr-for-selected="name">
+            <ps-app-home name="home"></ps-app-home>
+            <ps-app-pizza name="pizzas"></ps-app-pizza>
+            <ps-not-found name="fallback"></ps-not-found>
+        </iron-pages>
+
+    </template>
+    <script>
+
+        class PsAppRouting extends PsRoutingMixin(Polymer.Element) {
+            static get is() {return 'ps-app-routing';}
+            static get properties() {
+                return {
+                    routes: {
+                        type: Array,
+                        value: () => [
+                            {path: '/', page: 'home', default: true},
+                            {path: '/pizzas', page: 'pizzas', load: 'pizza/ps-app-pizza.html', hasChildren: true},
+                            {page: 'fallback', load: 'core/pages/ps-not-found.html', fallback: true},
+                        ],
+                        readOnly: true
+                    },
+                };
+            }
+        }
+        customElements.define(PsAppRouting.is, PsAppRouting);
+
+    </script>
+</dom-module>

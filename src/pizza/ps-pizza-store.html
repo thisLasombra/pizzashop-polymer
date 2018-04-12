@@ -1,0 +1,100 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/polymer/lib/mixins/mutable-data.html">
+<link rel="import" href="../core/http/ps-ajax.html">
+<link rel="import" href="../core/store/ps-store.html">
+
+<!-- 
+    Will persist the pizzas to the store and make
+    them available by binding whenever the component
+    is used.
+    It will also expose some methods to modify the pizzas
+    array and query its data.
+-->
+
+<dom-module id="ps-pizza-store">
+    <template>
+        <ps-ajax id="ajax" url="pizzas" handle-as="json" on-request="_onRequest" on-response="_onResponse" on-error="_onError"></ps-ajax>
+        <!-- Get the state from the store -->
+        <ps-store state="[[state]]"></ps-store>
+    </template>
+    <script>
+        (function () {
+
+            /**
+             * Define the path inside the store in which
+             * the pizzas will be recorded.
+             */
+            const PATH = 'state.pizzas';
+
+            /**
+             * We only one to query the server for pizzas 
+             * once so we will use this flag in case several
+             * pizza stores are rendered.
+             */
+            let requested = false;
+
+            /**
+             * Extend from PsStoreMixin in order to get notified
+             * about changes in the state. 
+             * 
+             */
+            class PsPizzaStore extends PsStoreMixin(Polymer.Element) {
+                static get is() {return 'ps-pizza-store';}
+                static get properties() {
+                    return {
+                        /**
+                         * Define a computed property that observes the
+                         * path so we can later bind directly to pizzas 
+                         */
+                        pizzas: {
+                            type: Array,
+                            computed: `_getPizzas(${PATH})`,
+                            notify: true
+                        },
+                        state: Object
+                    };
+                }
+                connectedCallback() {
+                    super.connectedCallback();
+                    this._doRequest();
+                }
+                addPizza(pizza) {
+                    let pizzas = [...this.pizzas, pizza];
+                    /**
+                     * Whenever we want to modify the state
+                     * use set so Polymer gets notified about
+                     * a complex change in the state object and
+                     * later notifies it to the store using the binding. 
+                     */
+                    this.set(PATH, pizzas);
+                }
+                findById(id) {
+                    // Use double equals since matching String against Number                    
+                    return this.pizzas && this.pizzas.find((pizza) => pizza.id == id);
+                }
+                _getPizzas(pizzas) {
+                    return pizzas;
+                }
+                _doRequest() {
+                    if (!requested) {
+                        this.$.ajax.generateRequest();
+                    }
+                }
+                _onRequest() {
+                    requested = true;
+                }
+                _onResponse({detail}) {
+                    /**
+                     * Add the recieved pizzas via ajax 
+                     * to the app store.
+                     */
+                    this.set(PATH, detail.response);
+                }
+                _onError({detail}) {
+                    console.log(detail.error)
+                }
+            }
+            customElements.define(PsPizzaStore.is, PsPizzaStore);
+        }());
+    </script>
+</dom-module>

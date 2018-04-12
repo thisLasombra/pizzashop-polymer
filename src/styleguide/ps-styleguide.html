@@ -1,0 +1,45 @@
+<link rel="import" href="/bower_components/polymer/lib/elements/custom-style.html">
+<link rel="import" href="./ps-styleguide-color.html">
+<link rel="import" href="./ps-styleguide-margin.html">
+<link rel="import" href="./ps-styleguide-padding.html">
+<link rel="import" href="./ps-styleguide-polyfluid.html">
+<link rel="import" href="./ps-styleguide-fonts.html">
+
+<!-- 
+    This module will contain our project styleguide
+    and some initial css configuratin which will be
+    available in the main document.
+
+    Setting our variables sizes in rem units combined
+    with scaling the html font size with respect to the
+    view width will make our interface quati responsive.
+ -->
+
+<!-- 
+    For stlyling the main document we must wrap our
+    styles into a `custom-style` tag, this will allow
+    us to use WebComponents CSS features in environments
+    where they are not available.
+ -->
+<custom-style>
+    <style>
+        /* 
+         * Make all elements include padding and border 
+         * in the element's total width and height.
+         */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            min-width: 320px;
+            font-family: 'Roboto', 'Noto', sans-serif;
+        }
+    </style>
+</custom-style>

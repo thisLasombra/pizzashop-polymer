@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+  <title>pizzashop-polymer2</title>
+  <meta name="description" content="Pizzashop Polymer2 app">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/images/favicon.ico">
+</head>
+
+<body>
+  <!-- 
+    Render our entry point component,
+    import the WebComponents v1 polyfill
+    and load our entry point component.
+
+    It is important to load the polyfill before
+    using html imports or they may not work.
+   -->
+  <ps-app></ps-app>
+  <script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+  <link rel="import" href="/src/ps-app.html">
+</body>
+
+</html>

@@ -1,0 +1,14 @@
+<script>
+    /**
+     * It is important to create a global configuration 
+     * service in our app, to do so we can create a
+     * namespace on window and it will be available
+     * from any other component.
+     */
+    (function () {
+        window.PizzaShop = window.PizzaShop || {};
+        window.PizzaShop.config = {
+            baseUrl: 'http://localhost:3000'
+        };
+    }());
+</script>

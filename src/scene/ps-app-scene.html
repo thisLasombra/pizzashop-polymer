@@ -1,0 +1,110 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/app-layout/app-layout.html">
+<link rel="import" href="/bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="./ps-scene-menu.html">
+<link rel="import" href="./ps-scene-toolbar.html">
+
+<!-- 
+    This module defines the layout of our app.
+
+    Aditionally it contains a progress bar that
+    will be active while there is an ajax request
+    being made. It works in the followin way:
+    1- When an event `ps-ajax-start` arrives here
+       we increment the `_activeAjax` count by one.
+    2- When an event `ps-ajax-end` is recieved we
+       decrement the `_activeAjax` count, and if it
+       becomes 0, then all running ajax request have
+       ended and we can deactivate the progress bar.
+ -->
+
+<dom-module id="ps-app-scene">
+    <template>
+
+        <style>
+            app-drawer-layout,
+            app-header-layout,
+            ::slotted(*) {
+                height: 100%;
+            }
+
+            /* 
+             * For styling custom elements through css variables, we can give
+             * them values in three places:
+             *
+             * 1- :host - All elements of that type will inside the shadow dom of
+             *            our element will get styled
+             * 
+             * 2- selector - All elements matching the selector will recieve the properties
+             *
+             * 3- :root - Every element of that type in our application will be styled.
+             *            Usefull when configuring a theme.            
+             */
+
+            paper-progress {
+                width: 100%;
+                --paper-progress-active-color: var(--color-secondary);
+                --paper-progress-indeterminate-cycle-duration: 4s;
+            }
+
+            paper-progress[disabled] {
+                display: none;
+            }
+        </style>
+
+        <app-drawer-layout>
+            <app-drawer id="drawer" slot="drawer" swipe-open opened={{opened}}>
+                <ps-scene-menu on-menu-item-click="_toggleMenu"></ps-scene-menu>
+            </app-drawer>
+            <app-header-layout has-scrolling-region>
+                <app-header slot="header">
+                    <ps-scene-toolbar on-menu-button-click="_toggleMenu" menu-open="[[opened]]"></ps-scene-toolbar>
+                </app-header>
+                <paper-progress indeterminate disabled="[[!loading]]"></paper-progress>
+                <slot name="content"></slot>
+            </app-header-layout>
+        </app-drawer-layout>
+    </template>
+
+    <script>
+
+        class PsAppScene extends Polymer.Element {
+            static get is() {return 'ps-app-scene';}
+            static get properties() {
+                return {
+                    loading: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+            constructor() {
+                super();
+                this._activeAjax = 0;
+            }
+            ready() {
+                super.ready();
+                this.addEventListener('ps-ajax-start', this._onAjaxStart);
+                this.addEventListener('ps-ajax-end', this._onAjaxEnd);
+            }
+            _onAjaxStart() {
+                this._activeAjax++;
+                this.loading = true;
+            }
+            _onAjaxEnd() {
+                this._activeAjax--;
+                if (this._activeAjax === 0) {
+                    this.loading = false;
+                }
+            }
+            _toggleMenu() {
+                if (this.$.drawer.persistent) {
+                    return;
+                }
+                this.$.drawer.toggle();
+            }
+        }
+        customElements.define(PsAppScene.is, PsAppScene);
+
+    </script>
+</dom-module>
