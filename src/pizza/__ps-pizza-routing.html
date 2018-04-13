@@ -1,7 +1,7 @@
 <link rel="import" href="/bower_components/polymer/polymer-element.html">
 <link rel="import" href="/bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="/bower_components/iron-selector/iron-selector.html">
-<link rel="import" href="../core/routing/page-js.html">
+<link rel="import" href="../core/routing/director.html">
 <link rel="import" href="./list/ps-pizza-list.html">
 
 <!-- Explained in src/core/routing/ps-routing-mixin.html -->
@@ -56,23 +56,21 @@
                 this._setupRoutes();
             }
             _setupRoutes() {
-                page('/pizzas', () => this.page = 'list');
-                page('/pizzas/add', () => this.page = 'add');
-                page('/pizzas/:id', (ctx, next) => {
-                    this.id = ctx.params.id;
+                const router = new Router().configure({
+                    html5history: true,
+                });
+                router.on('/pizzas', () =>
+                    this.page = 'list');
+                router.on('/pizzas/add', (...args) => {
+                    this.page = 'add';
+                })
+                router.on('/pizzas/:id', (...args) => {
                     this.page = 'details'
                 });
-                page('/pizzas/*', (ctx, next) => {
-                    if (ctx.handled) {
-                        ctx.handled = false;
-                        next();
-                    }
-                    else {
-                        this.page = 'fallback';
-                    }
+                router.on('/pizzas/?((\w|.)*)', () => {
+                    this.page = 'fallback';
                 });
-                page.stop();
-                page.start();
+                router.init();
             }
             _pageChanged() {
                 if (this.page === this.defaultPage) {

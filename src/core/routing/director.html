@@ -1,0 +1,23 @@
+<script src="/node_modules/director/build/director.min.js"></script>
+<script>
+    /*
+     * Make some instance router methods available statically in Router
+     * so we don't need to pass a reference to the routers all the time
+     * to perform route naviagation in an imperative way.
+     */
+    (function () {
+        const router = new Router().configure({html5history: true});
+        /*
+         * setRoute has three behaviours, but we only allow the one that
+         * navigates to a path since the others won't work outside of the
+         * correct router.
+         */
+        window.Router.setRoute = function (path) {
+            if (arguments.length !== 1) {
+                throw new Error('Router.setRoute accepts exactly one argument');
+            }
+            router.setRoute(path);
+        }
+        window.Router.getPath = router.getPath.bind(router);
+    }());
+</script>

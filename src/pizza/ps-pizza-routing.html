@@ -1,6 +1,7 @@
 <link rel="import" href="/bower_components/polymer/polymer-element.html">
 <link rel="import" href="/bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="/bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../core//routing/director.html">
 <link rel="import" href="../core/routing/ps-routing-mixin.html">
 <link rel="import" href="./list/ps-pizza-list.html">
 
@@ -16,7 +17,7 @@
         <iron-pages selected="[[page]]" attr-for-selected="name">
             <ps-pizza-list name="list" pizzas="[[pizzas]]"></ps-pizza-list>
             <ps-pizza-add name="add" pizzas="{{pizzas}}"></ps-pizza-add>
-            <ps-pizza-details name="details" pizzas="[[pizzas]]" pizza-id="[[context.params.id]]"></ps-pizza-details>
+            <ps-pizza-details name="details" pizzas="[[pizzas]]" pizza-id="[[params.0]]"></ps-pizza-details>
             <ps-not-found name="fallback"></ps-not-found>
 
             <!-- Below using the pizza store  -->

@@ -93,10 +93,10 @@
                 }
                 /**
                  * When clicking on an image we want to navigate
-                 * to its details, for that we use page 
+                 * to its details, for that we use Router 
                  */
                 _goToDetails() {
-                    page.show(`/pizzas/${this.pizza.id}`);
+                    Router.setRoute(`/pizzas/${this.pizza.id}`);
                 }
             }
             customElements.define(PsPizzaListCard.is, PsPizzaListCard)

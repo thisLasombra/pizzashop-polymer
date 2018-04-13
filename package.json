@@ -18,5 +18,8 @@
     "json-server": "^0.12.1",
     "npm-run-all": "^4.1.2",
     "polymer-cli": "^1.6.0"
+  },
+  "dependencies": {
+    "director": "^1.2.8"
   }
 }
