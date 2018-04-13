@@ -9,7 +9,7 @@
   "extraDependencies": [
     "manifest.json",
     "bower_components/webcomponentsjs/webcomponents-loader.js",
-    "bower_components/page/page.js"
+    "node_modules/director/build/director.js"
   ],
   "shell": "src/ps-app.html",
   "sources": [
