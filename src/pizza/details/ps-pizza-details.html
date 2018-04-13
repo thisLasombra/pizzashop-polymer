@@ -20,6 +20,9 @@
                 }
             }
             _pizzaIdChanged(id) {
+                // if (!this.active) {
+                //     return;
+                // }
                 const pizza = this._findPizzaById(id);
                 /**
                  * We can not automatically redirect to 404

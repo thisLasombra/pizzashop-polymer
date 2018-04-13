@@ -56,20 +56,16 @@
                 this._setupRoutes();
             }
             _setupRoutes() {
-                const router = new Router().configure({
-                    html5history: true,
-                });
+                const router = new Router();
                 router.on('/pizzas', () =>
                     this.page = 'list');
-                router.on('/pizzas/add', (...args) => {
+                router.on('/pizzas/add', () => {
                     this.page = 'add';
                 })
-                router.on('/pizzas/:id', (...args) => {
-                    this.page = 'details'
+                router.on('/pizzas/:id', (id) => {
+                    this.setProperties({id, page: 'details'});
                 });
-                router.on('/pizzas/?((\w|.)*)', () => {
-                    this.page = 'fallback';
-                });
+                rotuer.notfound = () => this.page = 'fallback';
                 router.init();
             }
             _pageChanged() {

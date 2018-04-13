@@ -60,19 +60,12 @@
                 this._setupRoutes();
             }
             _setupRoutes() {
-                const router = new Router().configure({
-                    html5history: true,
-                });
+                const router = new Router();
                 router.on('/', () => this.page = 'home');
-                router.on('/pizzas', () => {
-                    this.page = 'pizzas';
-                });
                 router.on('/pizzas/?((\w|.)*)', () => {
                     this.page = 'pizzas';
                 });
-                router.on('/?((\w|.)*)', () => {
-                    this.page = 'fallback';
-                });
+                router.notfound = () => this.page = 'fallback';
                 router.init();
             }
             _pageChanged() {

@@ -1,7 +1,5 @@
 <link rel="import" href="/bower_components/polymer/polymer-element.html">
-<link rel="import" href="/bower_components/iron-pages/iron-pages.html">
-<link rel="import" href="/bower_components/iron-selector/iron-selector.html">
-<link rel="import" href="./core/routing/director.html">
+<link rel="import" href="/bower_components/iron-lazy-pages/iron-lazy-pages.html">
 <link rel="import" href="./core/routing/ps-routing-mixin.html">
 <link rel="import" href="./ps-app-home.html">
 
@@ -31,16 +29,22 @@
              * available we must set iron-pages height to 100%
              */
 
-            iron-pages {
+            iron-lazy-pages {
                 height: 100%;
             }
         </style>
 
-        <iron-pages role="main" selected="[[page]]" attr-for-selected="name">
-            <ps-app-home name="home"></ps-app-home>
-            <ps-app-pizza name="pizzas"></ps-app-pizza>
-            <ps-not-found name="fallback"></ps-not-found>
-        </iron-pages>
+        <iron-lazy-pages role="main" selected="[[page]]" attr-for-selected="name">
+            <template name="home" is="dom-if" restamp>
+                <ps-app-home></ps-app-home>
+            </template>
+            <template name="pizzas" is="dom-if" restamp>
+                <ps-app-pizza></ps-app-pizza>
+            </template>
+            <template name="fallback" is="dom-if" restamp>
+                <ps-not-found></ps-not-found>
+            </template>
+        </iron-lazy-pages>
 
     </template>
     <script>

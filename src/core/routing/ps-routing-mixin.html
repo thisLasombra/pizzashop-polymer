@@ -1,9 +1,15 @@
 <link rel="import" href="/bower_components/polymer/polymer-element.html">
-
+<link rel="import" href="./director.html">
 <script>
     (function () {
 
-        const WILDCARD = '/?((\w|.)*)';
+        const WILDCARD = '?((\w|.)*)';
+        const ROUTER_CONFIG = {
+            /**
+             * Use hash routes
+             */
+            html5history: false,
+        };
 
         PsRoutingMixin = (superClass) => {
             return class extends superClass {
@@ -28,13 +34,6 @@
                          * Route context
                          */
                         params: Object,
-                        /**
-                         * Router instance
-                         */
-                        router: {
-                            type: Object,
-                            notify: true
-                        }
                     };
                 }
                 /**
@@ -42,24 +41,21 @@
                  * it will setupt the router and its routes
                  */
                 connectedCallback() {
+                    super.connectedCallback();
                     this._createRouter();
                     this._setupRoutes();
                     this._initRouter();
                 }
-                /**
-                 * When the component is disconected we will
-                 * destroy the router to improve performance.
-                 */
                 disconnectedCallback() {
-                    this._destroyRouter();
+                    super.disconnectedCallback();
+                    this._removeRouter();
                 }
                 /**
                  * Creates a new instance of the router
                  */
                 _createRouter() {
-                    this.router = new Router().configure({
-                        html5history: true,
-                    });
+                    this.router = new Router().configure(ROUTER_CONFIG);
+                    Router.setRoute = this.router.setRoute.bind(this.router);
                 }
                 /**
                  * Configures the different routes attending to its type
@@ -97,19 +93,11 @@
                  * first, it gets first loaded so its route becomes available.
                  */
                 _createRouteWithChildren(route) {
-                    this.router.on(this._addBase(route.path), () => {
-                        this._onRouteWithChildren(route);
+                    this.router.on(`${this._addBase(route.path)}/${WILDCARD}`, () => {
+                        if (this.page !== route.page) {
+                            this.page = route.page;
+                        }
                     });
-                    this.router.on(`${this._addBase(route.path)}${WILDCARD}`, () => {
-                        this._onRouteWithChildren(route);
-                    });
-                }
-                /**
-                 * On routes with children we just change the page
-                 * and let the next router handle everything.
-                 */
-                _onRouteWithChildren(route) {
-                    this.page = route.page;
                 }
                 /**
                  * When a final route is matched, we store its possible
@@ -118,7 +106,7 @@
                  */
                 _createRoute(route) {
                     this.router.on(this._addBase(route.path), (...params) => {
-                        this.setProperties({params, page: route.page});
+                        this.setProperties({page: route.page, params});
                     });
                 }
                 /**
@@ -127,15 +115,13 @@
                 _initRouter() {
                     this.router.init();
                 }
-                /**
-                 * Destroy the router.
-                 */
-                _destroyRouter() {
+                _removeRouter() {
                     this.router.destroy();
+                    this.router = null;
                 }
                 /**
-                 * Add the base path if any to the newly created routes
-                 */
+                  * Add the base path if any to the newly created routes
+                  */
                 _addBase(path) {
                     if (!this.base) {
                         return path;
