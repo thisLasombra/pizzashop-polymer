@@ -2,36 +2,12 @@
 <link rel="import" href="/bower_components/iron-lazy-pages/iron-lazy-pages.html">
 <link rel="import" href="./core/routing/ps-routing-mixin.html">
 <link rel="import" href="./ps-app-home.html">
+<link rel="import" href="./core/styles/ps-styles.html">
 
 <dom-module id="ps-app-routing">
     <template>
 
-        <style>
-            /** 
-             * Before the component is defined, we can 
-             * use the :not(:defined) selector to build
-             * a layout that resembles the component.
-             *
-             * This selector is not polyfilled, so an alternative
-             * can be to use an attribute inactive, and remove it
-             * on the connectedCallback of the component.
-             */
-
-            ps-app-pizza:not(:defined) {
-                height: 100%;
-                width: 100%;
-                background-color: green;
-                display: block;
-            }
-
-            /**
-             * If we wan't our components to occupy all the content
-             * available we must set iron-pages height to 100%
-             */
-
-            iron-lazy-pages {
-                height: 100%;
-            }
+        <style include="ps-styles">
         </style>
 
         <iron-lazy-pages role="main" selected="[[page]]" attr-for-selected="name">
