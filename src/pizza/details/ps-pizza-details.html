@@ -1,9 +1,7 @@
 <link rel="import" href="/bower_components/polymer/polymer-element.html">
-<!-- <link rel="import" href="../ps-pizza-store.html"> -->
 
 <dom-module id="ps-pizza-details">
     <template>
-        <!-- <ps-pizza-store id="pizzaStore"></ps-pizza-store> -->
         <h2>pizza details [[pizzaId]]</h2>
         <div>[[pizza.name]]</div>
     </template>
@@ -16,13 +14,22 @@
                     pizzaId: {
                         type: String,
                         observer: '_pizzaIdChanged'
-                    }
+                    },
+                    active: Boolean
                 }
             }
             _pizzaIdChanged(id) {
-                // if (!this.active) {
-                //     return;
-                // }
+                /**
+                 * If using iron-pages for routing, you will see how after
+                 * navigating to and outside a page it does not get disconnected
+                 * from the DOM, therefore all observers and event listeners will
+                 * still be active, we have to check that this page is active or
+                 * if a valid id is found (`pizzas/add`) we will be redirected
+                 * to /pizzas.
+                 */
+                if (!this.active) {
+                    return;
+                }
                 const pizza = this._findPizzaById(id);
                 /**
                  * We can not automatically redirect to 404
@@ -38,10 +45,6 @@
             _findPizzaById(id) {
                 // Use double equals since matching String against Number
                 return (this.pizzas && id && this.pizzas.find((pizza) => pizza.id == id));
-
-                // Below using pizza-store
-
-                // return id && this.$.pizzaStore.findById(id);
             }
             _goToList() {
                 Router.setRoute('/pizzas');

@@ -12,18 +12,11 @@
     <template>
         <iron-ajax auto url="[[_baseUrl]]/pizzas" last-response="{{pizzas}}"></iron-ajax>
         <ps-pizza-routing pizzas="{{pizzas}}"></ps-pizza-routing>
-
-        <!-- Below using the pizza-store -->
-
-        <!-- <ps-pizza-routing></ps-pizza-routing> -->
     </template>
     <script>
 
         class PsAppPizza extends Polymer.Element {
             static get is() {return 'ps-app-pizza';}
-            /**
-             * Properties only needed if not using the store 
-             */
             static get properties() {
                 return {
                     pizzas: {

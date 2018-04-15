@@ -35,6 +35,11 @@
                 ready() {
                     super.ready();
                     this._copyAttributes();
+                    /**
+                     * Appart from copying the attributes
+                     * we will also need to pass down all
+                     * bidings we plan to be using.
+                     */
                 }
                 generateRequest() {
                     this.$.ironAjax.generateRequest();

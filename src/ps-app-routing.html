@@ -1,44 +1,88 @@
 <link rel="import" href="/bower_components/polymer/polymer-element.html">
-<link rel="import" href="/bower_components/iron-lazy-pages/iron-lazy-pages.html">
-<link rel="import" href="./core/routing/ps-routing-mixin.html">
+<link rel="import" href="/bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="/bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="./core/routing/director.html">
 <link rel="import" href="./ps-app-home.html">
-<link rel="import" href="./core/styles/ps-styles.html">
+
+<!-- Explained in src/core/routing/ps-routing-mixin.html -->
 
 <dom-module id="ps-app-routing">
     <template>
 
-        <style include="ps-styles">
+        <style>
+            ps-app-pizza:not(:defined) {
+                height: 100%;
+                width: 100%;
+                background-color: green;
+                display: block;
+            }
+
+            iron-pages {
+                height: 100%;
+            }
         </style>
 
-        <iron-lazy-pages role="main" selected="[[page]]" attr-for-selected="name">
-            <template name="home" is="dom-if" restamp>
-                <ps-app-home></ps-app-home>
-            </template>
-            <template name="pizzas" is="dom-if" restamp>
-                <ps-app-pizza></ps-app-pizza>
-            </template>
-            <template name="fallback" is="dom-if" restamp>
-                <ps-not-found></ps-not-found>
-            </template>
-        </iron-lazy-pages>
+        <iron-pages role="main" selected="[[page]]" attr-for-selected="name">
+            <ps-app-home name="home"></ps-app-home>
+            <ps-app-pizza name="pizzas" route="[[subroute]]"></ps-app-pizza>
+            <ps-not-found name="fallback"></ps-not-found>
+        </iron-pages>
 
     </template>
     <script>
 
-        class PsAppRouting extends PsRoutingMixin(Polymer.Element) {
+        class PsAppRouting extends Polymer.Element {
             static get is() {return 'ps-app-routing';}
             static get properties() {
                 return {
+                    page: {
+                        type: String,
+                        observer: '_pageChanged'
+                    },
                     routes: {
-                        type: Array,
-                        value: () => [
-                            {path: '/', page: 'home', default: true},
-                            {path: '/pizzas', page: 'pizzas', load: 'pizza/ps-app-pizza.html', hasChildren: true},
-                            {page: 'fallback', load: 'core/pages/ps-not-found.html', fallback: true},
-                        ],
+                        type: Object,
+                        value: () => ({
+                            home: 'ps-app-home.html',
+                            pizzas: 'pizza/ps-app-pizza.html',
+                            fallback: 'core/pages/ps-not-found.html'
+                        }),
                         readOnly: true
                     },
+                    defaultPage: {
+                        type: String,
+                        value: 'home',
+                        readOnly: true,
+                    }
                 };
+            }
+            ready() {
+                super.ready();
+                this._setupRoutes();
+            }
+            _setupRoutes() {
+                const router = new Router();
+                router.on('/', () => this.page = 'home');
+                router.on('/pizzas/?((\w|.)*)', () => {
+                    this.page = 'pizzas';
+                });
+                router.notfound = () => this.page = 'fallback';
+                router.init();
+            }
+            _pageChanged() {
+                if (this.page === this.defaultPage) {
+                    return;
+                }
+                const componentPath = this._resolveComponent(this.page);
+                Polymer.importHref(
+                    this.resolveUrl(componentPath),
+                    null, null, true
+                );
+            }
+            _resolveComponent(page) {
+                if (!this.routes[page]) {
+                    return this.routes.fallback;
+                }
+                return this.routes[page];
             }
         }
         customElements.define(PsAppRouting.is, PsAppRouting);

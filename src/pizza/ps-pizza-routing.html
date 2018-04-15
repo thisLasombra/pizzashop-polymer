@@ -1,59 +1,90 @@
 <link rel="import" href="/bower_components/polymer/polymer-element.html">
-<link rel="import" href="/bower_components/iron-lazy-pages/iron-lazy-pages.html">
-<link rel="import" href="../core/routing/ps-routing-mixin.html">
-<link rel="import" href="../core/styles/ps-styles.html">
+<link rel="import" href="/bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="/bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../core/routing/director.html">
 <link rel="import" href="./list/ps-pizza-list.html">
+
 
 <dom-module id="ps-pizza-routing">
     <template>
 
-        <style include="ps-styles">
+        <style>
+            iron-pages {
+                height: 100%;
+            }
         </style>
 
-        <iron-lazy-pages selected="[[page]]" attr-for-selected="name">
-            <template name="list" is="dom-if" restamp>
-                <ps-pizza-list pizzas="[[pizzas]]"></ps-pizza-list>
-            </template>
-            <template name="add" is="dom-if" restamp>
-                <ps-pizza-add pizzas="{{pizzas}}"></ps-pizza-add>
-            </template>
-            <template name="details" is="dom-if" restamp>
-                <ps-pizza-details pizzas="[[pizzas]]" pizza-id="[[params.0]]"></ps-pizza-details>
-            </template>
-            <template name="fallback" is="dom-if" restamp>
-                <ps-not-found></ps-not-found>
-            </template>
-
-            <!-- Below using the pizza store  -->
-
-            <!-- <ps-pizza-list name="list"></ps-pizza-list>
-            <ps-pizza-add name="add"></ps-pizza-add>
-            <ps-pizza-details name="details" pizza-id="[[context.params.id]]"></ps-pizza-details>
-            <ps-not-found name="fallback"></ps-not-found> -->
-        </iron-lazy-pages>
+        <iron-pages selected="[[page]]" attr-for-selected="name">
+            <ps-pizza-list name="list" pizzas="[[pizzas]]"></ps-pizza-list>
+            <ps-pizza-add name="add" pizzas="{{pizzas}}"></ps-pizza-add>
+            <ps-pizza-details name="details" pizza-id="{{id}}" pizzas="[[pizzas]]" active="[[_isActive('details')]]"></ps-pizza-details>
+            <ps-not-found name="fallback"></ps-not-found>
+        </iron-pages>
 
     </template>
     <script>   
 
-        class PsPizzaRouting extends PsRoutingMixin(Polymer.Element) {
+        class PsPizzaRouting extends Polymer.Element {
             static get is() {return 'ps-pizza-routing';}
             static get properties() {
                 return {
+                    page: {
+                        type: String,
+                        observer: '_pageChanged'
+                    },
                     routes: {
-                        type: Array,
-                        value: () => [
-                            {path: '/', page: 'list', default: true},
-                            {path: '/add', page: 'add', load: 'add/ps-pizza-add.html'},
-                            {path: '/:id', page: 'details', load: 'details/ps-pizza-details.html'},
-                            {page: 'fallback', load: '../core/pages/ps-not-found.html', fallback: true},
-                        ],
+                        type: Object,
+                        value: {
+                            add: 'add/ps-pizza-add.html',
+                            details: 'details/ps-pizza-details.html',
+                            list: 'list/ps-pizza-list.html',
+                            fallback: '../core/pages/ps-not-found.html'
+                        },
                         readOnly: true,
                     },
-                    base: {
+                    defaultPage: {
                         type: String,
-                        value: '/pizzas'
+                        value: 'list',
+                        readOnly: true,
                     },
+                    id: String,
                 };
+            }
+            ready() {
+                super.ready();
+                this._setupRoutes();
+            }
+            _isActive(page) {
+                return page === this.page;
+            }
+            _setupRoutes() {
+                const router = new Router();
+                router.on('/pizzas', () =>
+                    this.page = 'list');
+                router.on('/pizzas/add', () => {
+                    this.page = 'add';
+                })
+                router.on('/pizzas/:id', (id) => {
+                    this.setProperties({id, page: 'details'});
+                });
+                rotuer.notfound = () => this.page = 'fallback';
+                router.init();
+            }
+            _pageChanged() {
+                if (this.page === this.defaultPage) {
+                    return;
+                }
+                const componentPath = this._resolveComponent(this.page);
+                Polymer.importHref(
+                    this.resolveUrl(componentPath),
+                    null, null, true
+                );
+            }
+            _resolveComponent(page) {
+                if (!this.routes[page]) {
+                    return this.routes.fallback;
+                }
+                return this.routes[page];
             }
         }
         customElements.define(PsPizzaRouting.is, PsPizzaRouting);
