@@ -13,34 +13,33 @@
 
 <dom-module id="ps-app">
   <template>
+
     <ps-app-scene>
       <ps-app-routing slot="content"></ps-app-routing>
     </ps-app-scene>
 
   </template>
   <script>
-    (function () {
 
+    (function () {
       /**
        * Initialize location hash on window load since the
        * router doesn't do it itself
        */
       window.onload = function () {
-        window.location.hash = window.location.hash || '#/'
+        window.location.hash = (window.location.hash || '#/');
       }
-
       /**
        * Polymer has some configuration
        * and for it to work porperly we must
        * set it before any element is rendered.
        */
       Polymer.setPassiveTouchGestures(true);
-
       class PsApp extends Polymer.Element {
         static get is() {return 'ps-app';}
       }
       customElements.define(PsApp.is, PsApp);
-
     }());
+
   </script>
 </dom-module>

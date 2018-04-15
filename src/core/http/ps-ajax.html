@@ -1,5 +1,6 @@
 <link rel="import" href="/bower_components/polymer/polymer-element.html">
 <link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="./ps-ajax-spinner-mixin.html">
 
 <!-- 
     Wrapper for the iron-ajax service that will allow us to configure all the request
@@ -12,64 +13,50 @@
 
 <dom-module id="ps-ajax">
     <template>
-        <iron-ajax id="ironAjax" on-request="_onRequest" on-response="_onResponse" on-error="_onError" url="[[_baseUrl]]/[[url]]">
+
+        <iron-ajax id="ironAjax" url="[[baseUrl]]/[[url]]" params="[[params]]" method="[[method]]" headers="[[headers]]" content-type="[[contentType]]"
+            body="[[body]]" handle-as="[[handleAs]]" auto="[[auto]]" loading="{{loading}}" last-response="{{lastResponse}}" last-error="{{lastError}}">
+
         </iron-ajax>
     </template>
     <script>
 
         (function () {
-
-            const protectedAttributes = ['url'];
-
-            class PsAjax extends Polymer.Element {
+            class PsAjax extends PsAjaxSpinnerMixin(Polymer.Element) {
                 static get is() {return 'ps-ajax';}
                 static get properties() {
                     return {
-                        _baseUrl: {
+                        baseUrl: {
                             type: String,
                             value: PizzaShop.config.baseUrl
                         },
-                        url: String
+                        url: String,
+                        params: Object,
+                        method: String,
+                        headers: Object,
+                        contentType: {
+                            type: String,
+                            value: 'application/json'
+                        },
+                        body: Object,
+                        handleAs: String,
+                        auto: Boolean,
+                        loading: {
+                            type: Boolean,
+                            notify: true,
+                        },
+                        lastResponse: {
+                            type: Object,
+                            notify: true
+                        },
+                        lastError: {
+                            type: Object,
+                            notify: true
+                        }
                     };
-                }
-                ready() {
-                    super.ready();
-                    this._copyAttributes();
                 }
                 generateRequest() {
                     this.$.ironAjax.generateRequest();
-                }
-                _copyAttributes() {
-                    Object.values(this.attributes).forEach(({name, value}) => {
-                        if (!protectedAttributes.includes(name)) {
-                            this.$.ironAjax.setAttribute(name, value);
-                        }
-                    });
-                }
-                _onRequest() {
-                    this._dispatchAjaxStart();
-                }
-                _onResponse() {
-                    this._dispatchAjaxEnd();
-                }
-                _onError() {
-                    this._dispatchAjaxEnd();
-                }
-                _dispatchAjaxStart() {
-                    this.dispatchEvent(new CustomEvent(
-                        'ps-ajax-start', {
-                            bubbles: true,
-                            composed: true
-                        }
-                    ));
-                }
-                _dispatchAjaxEnd() {
-                    this.dispatchEvent(new CustomEvent(
-                        'ps-ajax-end', {
-                            bubbles: true,
-                            composed: true
-                        }
-                    ));
                 }
             }
             customElements.define(PsAjax.is, PsAjax);

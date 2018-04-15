@@ -1,0 +1,40 @@
+<script>
+    (function () {
+        PsAjaxSpinnerMixin = (superClass) => {
+            return class extends superClass {
+                static get properties() {
+                    return {
+                        loading: {
+                            type: Boolean,
+                            notify: true,
+                            observer: '_loadingChanged'
+                        },
+                    }
+                }
+                _loadingChanged(loading) {
+                    if (loading) {
+                        this._dispatchAjaxStart();
+                    } else {
+                        this._dispatchAjaxEnd();
+                    }
+                }
+                _dispatchAjaxStart() {
+                    this.dispatchEvent(new CustomEvent(
+                        'ps-ajax-start', {
+                            bubbles: true,
+                            composed: true
+                        }
+                    ));
+                }
+                _dispatchAjaxEnd() {
+                    this.dispatchEvent(new CustomEvent(
+                        'ps-ajax-end', {
+                            bubbles: true,
+                            composed: true
+                        }
+                    ));
+                }
+            }
+        }
+    }());
+</script>

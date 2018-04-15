@@ -44,7 +44,7 @@
             <ul>
                 <dom-repeat items="[[menuItems]]">
                     <template>
-                        <ps-menu-item on-menu-item-click="_onMenuItemClick" item="[[item]]"> </ps-menu-item>
+                        <ps-menu-item on-ps-menu-item-click="_onMenuItemClick" item="[[item]]"> </ps-menu-item>
                     </template>
                 </dom-repeat>
             </ul>
@@ -70,20 +70,25 @@
             }
             constructor() {
                 super();
-                this._onMenuItemClick = this._onMenuItemClick.bind(this);
+                this._selectedMenuItem = null;
             }
             _onMenuItemClick(ev) {
-                this._deselectAllElements();
-                ev.target.setAttribute('selected', '');
+                if (this._selectedMenuItem === ev.target) {
+                    return;
+                }
+                this._deselectCurrentItem();
+                this._selectNewItem(ev.target);
                 this._dispatchItemClick();
             }
-            _deselectAllElements() {
-                this.shadowRoot.querySelectorAll('ps-menu-item').forEach((item) => {
-                    item.removeAttribute('selected');
-                });
+            _selectNewItem(element) {
+                element.setAttribute('selected', '');
+                this._selectedMenuItem = element;
+            }
+            _deselectCurrentItem() {
+                this._selectedMenuItem && this._selectedMenuItem.removeAttribute('selected');
             }
             _dispatchItemClick() {
-                this.dispatchEvent(new CustomEvent('menu-item-click'));
+                this.dispatchEvent(new CustomEvent('ps-menu-click'));
             }
         }
         customElements.define(PsSceneMenu.is, PsSceneMenu);

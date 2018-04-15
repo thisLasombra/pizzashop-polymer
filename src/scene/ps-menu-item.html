@@ -32,13 +32,10 @@
             static get properties() {
                 return {
                     item: Object,
-                    index: Number,
-                }
+                };
             }
             _onClick() {
-                this.dispatchEvent(new CustomEvent('menu-item-click', {
-                    detail: {index: this.index}
-                }));
+                this.dispatchEvent(new CustomEvent('ps-menu-item-click'));
             }
         }
         customElements.define(PsMenuItem.is, PsMenuItem);

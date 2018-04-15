@@ -129,24 +129,68 @@
              */
             PsStoreMixin = (superClass) => {
                 return class extends superClass {
+                    static get properties() {
+                        return {
+                            entity: String,
+                            state: Object,
+                        };
+                    }
+                    ready() {
+                        super.ready();
+                        this._createPropertyForEntity();
+                    }
                     connectedCallback() {
                         super.connectedCallback();
-                        /**
-                         * If by any change the instance has not been
-                         * initialized when an element tries to register
-                         * we create a new one and add it to the dom so 
-                         * it gets created.
-                         */
-                        if (!instance) {
-                            document.body.appendChild(
-                                document.createElement(PsStore.is)
-                            );
-                        }
+                        this._checkForInstance();
                         instance.register(this);
                     }
                     disconnectedCallback() {
                         super.disconnectedCallback();
                         instance.unregister(this);
+                    }
+                    /**
+                     * Utility method to propate changes into the
+                     * state inside the entity, a subPath can be
+                     * specified for really concrete changes.
+                     */
+                    save(value, subPath) {
+                        const path = subPath
+                            ? `state.${this.entity}.${path}`
+                            : `state.${this.entity}`;
+                        this.set(path, value);
+                    }
+                    /**
+                     * Creates a computed and notifying property that
+                     * will observe all changes in state.entity
+                     * so we just need to worry about our entity.
+                     */
+                    _createPropertyForEntity() {
+                        this._createNotifyingProperty(this.entity);
+                        this._createComputedProperty(
+                            this.entity,
+                            `_getFromState(state.${this.entity}.*)`,
+                            true
+                        );
+                    }
+                    /**
+                     * Always return the full entity, no matter
+                     * what the change is.
+                     */
+                    _getFromState() {
+                        return this.state[this.entity];
+                    }
+                    /**
+                     * If by any change the instance has not been
+                     * initialized when an element tries to register
+                     * we create a new one and add it to the dom so 
+                     * it gets created.
+                     */
+                    _checkForInstance() {
+                        if (!instance) {
+                            document.body.appendChild(
+                                document.createElement(PsStore.is)
+                            );
+                        }
                     }
                 }
             }

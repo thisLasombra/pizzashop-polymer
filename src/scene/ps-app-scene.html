@@ -53,12 +53,12 @@
         </style>
 
         <app-drawer-layout>
-            <app-drawer id="drawer" slot="drawer" swipe-open opened={{opened}}>
-                <ps-scene-menu on-menu-item-click="_toggleMenu"></ps-scene-menu>
+            <app-drawer id="drawer" slot="drawer" swipe-open opened="{{opened}}">
+                <ps-scene-menu on-ps-menu-click="_toggleMenu"></ps-scene-menu>
             </app-drawer>
             <app-header-layout has-scrolling-region>
                 <app-header slot="header">
-                    <ps-scene-toolbar on-menu-button-click="_toggleMenu" menu-open="[[opened]]"></ps-scene-toolbar>
+                    <ps-scene-toolbar on-ps-toolbar-menu-click="_toggleMenu" menu-open="[[opened]]"></ps-scene-toolbar>
                 </app-header>
                 <paper-progress indeterminate disabled="[[!loading]]"></paper-progress>
                 <slot name="content"></slot>

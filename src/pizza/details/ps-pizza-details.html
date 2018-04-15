@@ -1,13 +1,14 @@
 <link rel="import" href="/bower_components/polymer/polymer-element.html">
-<!-- <link rel="import" href="../ps-pizza-store.html"> -->
+<link rel="import" href="../ps-pizza-store.html">
 
 <dom-module id="ps-pizza-details">
     <template>
-        <!-- <ps-pizza-store id="pizzaStore"></ps-pizza-store> -->
+
+        <ps-pizza-store id="pizzaStore"></ps-pizza-store>
         <h2>pizza details [[pizzaId]]</h2>
         <div>[[pizza.name]]</div>
-    </template>
 
+    </template>
     <script>
         class PsPizzaDetails extends Polymer.Element {
             static get is() {return 'ps-pizza-details';}
@@ -20,9 +21,6 @@
                 }
             }
             _pizzaIdChanged(id) {
-                // if (!this.active) {
-                //     return;
-                // }
                 const pizza = this._findPizzaById(id);
                 /**
                  * We can not automatically redirect to 404
@@ -36,17 +34,16 @@
                 this.pizza = pizza;
             }
             _findPizzaById(id) {
-                // Use double equals since matching String against Number
-                return (this.pizzas && id && this.pizzas.find((pizza) => pizza.id == id));
-
-                // Below using pizza-store
-
-                // return id && this.$.pizzaStore.findById(id);
+                return id && this.$.pizzaStore.findById(id);
             }
             _goToList() {
+                /**
+                 * Use global Router object to navigate
+                 */
                 Router.setRoute('/pizzas');
             }
         }
         customElements.define(PsPizzaDetails.is, PsPizzaDetails);
+
     </script>
 </dom-module>

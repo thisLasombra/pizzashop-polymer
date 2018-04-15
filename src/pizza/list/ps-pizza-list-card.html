@@ -23,6 +23,8 @@
 
             .ps-pizza-list-card__image {
                 padding: var(--padding-medium);
+                width: 400px;
+                height: 400px;
             }
 
             .ps-pizza-list-card__header {
@@ -36,7 +38,7 @@
 
         <paper-card class="ps-pizza-list-card" on-click="_goToDetails" on-mouseover="_onMouseOver" on-mouseout="_onMouseOut" hover$="[[_hover]]">
             <!-- Images will be too big on mobile, use properties sizes and srcset to adapt them to the viewport -->
-            <ps-img class="ps-pizza-list-card__image" src="[[_imgSrc]]" lazy-src="[[_imgLazySrc]] "></ps-img>
+            <ps-img class="ps-pizza-list-card__image" src="[[_imgSrc]]" lazy-src="[[_imgLazySrc]]"></ps-img>
             <h3 class="ps-pizza-list-card__header ">[[pizza.name]]</h3>
         </paper-card>
 
