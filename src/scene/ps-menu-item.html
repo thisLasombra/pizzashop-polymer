@@ -3,43 +3,15 @@
 <dom-module id="ps-menu-item">
     <template>
 
-        <style>
-            li {
-                display: block;
-                border-bottom: 1px solid var(--color-text--primary);
-                background-color: inherit;
-            }
-
-            a {
-                height: var(--margin-big);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                text-decoration: none;
-                color: inherit;
-            }
-        </style>
-
-        <li on-click="_onClick">
-            <a href="[[item.ref]]">[[item.label]]</a>
-        </li>
+        <!-- 
+            TODO: define the menu item links, try to use semantic html
+        -->
 
     </template>
     <script>
 
         class PsMenuItem extends Polymer.Element {
             static get is() {return 'ps-menu-item';}
-            static get properties() {
-                return {
-                    item: Object,
-                    index: Number,
-                }
-            }
-            _onClick() {
-                this.dispatchEvent(new CustomEvent('menu-item-click', {
-                    detail: {index: this.index}
-                }));
-            }
         }
         customElements.define(PsMenuItem.is, PsMenuItem);
 

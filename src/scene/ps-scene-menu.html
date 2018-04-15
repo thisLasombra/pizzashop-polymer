@@ -6,85 +6,15 @@
 <dom-module id="ps-scene-menu">
     <template>
 
-        <style>
-            header {
-                background-color: var(--color-secondary--light);
-                border-bottom: 1px solid var(--color-text--primary);
-            }
-
-            iron-image {
-                width: 256px;
-                height: 256px;
-                background-color: var(--color-secondary--light);
-            }
-
-            nav {
-                height: 100%;
-                background: var(--color-primary);
-                color: var(--color-text--primary);
-            }
-
-            ul {
-                list-style-type: none;
-                margin: 0;
-                padding: 0;
-                text-align: center;
-            }
-
-            ps-menu-item[selected] {
-                background-color: var(--color-secondary);
-                color: var(--color-text--secondary);
-            }
-        </style>
-
-        <header>
-            <iron-image src="/images/app-icon.png" preload fade sizing="contain"></iron-image>
-        </header>
-        <nav>
-            <ul>
-                <dom-repeat items="[[menuItems]]">
-                    <template>
-                        <ps-menu-item on-menu-item-click="_onMenuItemClick" item="[[item]]"> </ps-menu-item>
-                    </template>
-                </dom-repeat>
-            </ul>
-        </nav>
+        <!-- 
+            TODO: define the menu component, it has a header and a list of links
+         -->
 
     </template>
     <script>
 
         class PsSceneMenu extends Polymer.Element {
             static get is() {return 'ps-scene-menu';}
-            static get properties() {
-                return {
-                    menuItems: {
-                        type: Array,
-                        value: [
-                            {ref: '/#/', label: 'Home'},
-                            {ref: '/#/pizzas', label: 'Pizzas'},
-                            {ref: '/#/pizzas/add', label: 'Add pizza'}
-                        ],
-                        readOnly: true,
-                    }
-                }
-            }
-            constructor() {
-                super();
-                this._onMenuItemClick = this._onMenuItemClick.bind(this);
-            }
-            _onMenuItemClick(ev) {
-                this._deselectAllElements();
-                ev.target.setAttribute('selected', '');
-                this._dispatchItemClick();
-            }
-            _deselectAllElements() {
-                this.shadowRoot.querySelectorAll('ps-menu-item').forEach((item) => {
-                    item.removeAttribute('selected');
-                });
-            }
-            _dispatchItemClick() {
-                this.dispatchEvent(new CustomEvent('menu-item-click'));
-            }
         }
         customElements.define(PsSceneMenu.is, PsSceneMenu);
 

@@ -6,30 +6,11 @@
 <dom-module id="ps-pizza-list">
     <template>
 
-        <style include="ps-styles">
-            .ps-pizza-list {
-                padding: var(--padding-medium);
-            }
-
-            .ps-pizza-list__content {
-                flex-wrap: wrap;
-                justify-content: space-evenly;
-            }
-
-            .ps-pizza-list__content__pizza {
-                padding-top: var(--padding-medium);
-            }
-        </style>
-
-        <div class="ps-pizza-list">
-            <div class="ps-pizza-list__content horizontal">
-                <dom-repeat items="[[pizzas]]">
-                    <template>
-                        <ps-pizza-list-card class="ps-pizza-list__content__pizza" pizza="[[item]]"> </ps-pizza-list-card>
-                    </template>
-                </dom-repeat>
-            </div>
-        </div>
+        <!-- 
+            TODO: for each pizza obtained in the entrypoint pizza component
+            print a ps-pizza-list-card which will represent the pizza.
+            Use Flex to make the layout responsive without needing mediaqueries
+        -->
 
     </template>
 

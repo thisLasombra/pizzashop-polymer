@@ -5,40 +5,11 @@
 
 <dom-module id="ps-pizza-list-card">
     <template>
-        <style include="ps-styles">
-            :host {
-                --paper-card-header-color: var(--color-secondary);
-            }
-
-            .ps-pizza-list-card {
-                cursor: pointer;
-                color: var(--color-text--primary);
-                border: 1px solid;
-                border-color: var(--color-primary--dark);
-            }
-
-            .ps-pizza-list-card[hover] {
-                border-color: var(--color-secondary--light);
-            }
-
-            .ps-pizza-list-card__image {
-                padding: var(--padding-medium);
-            }
-
-            .ps-pizza-list-card__header {
-                text-align: center;
-                background: var(--color-primary--dark);
-                color: var(--color-text--primary);
-                margin: 0;
-                line-height: 3em;
-            }
-        </style>
-
-        <paper-card class="ps-pizza-list-card" on-click="_goToDetails" on-mouseover="_onMouseOver" on-mouseout="_onMouseOut" hover$="[[_hover]]">
-            <!-- Images will be too big on mobile, use properties sizes and srcset to adapt them to the viewport -->
-            <ps-img class="ps-pizza-list-card__image" src="[[_imgSrc]]" lazy-src="[[_imgLazySrc]] "></ps-img>
-            <h3 class="ps-pizza-list-card__header ">[[pizza.name]]</h3>
-        </paper-card>
+        <!-- 
+        TODO: print the pizza name and image inside a card
+        make the border of the card change of colour when
+        hovered
+        -->
 
     </template>
     <script>
@@ -75,8 +46,7 @@
                         _imgLazySrc: {
                             type: String,
                             computed: '_getImgLazySrc(pizza.img)'
-                        },
-                        _hover: Boolean
+                        }
                     };
                 }
                 _getImgSrc(image) {
@@ -84,12 +54,6 @@
                 }
                 _getImgLazySrc(image) {
                     return image + SIZE + EXTENSION;
-                }
-                _onMouseOver() {
-                    this._hover = true;
-                }
-                _onMouseOut() {
-                    this._hover = false;
                 }
                 /**
                  * When clicking on an image we want to navigate

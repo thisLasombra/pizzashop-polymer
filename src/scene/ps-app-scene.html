@@ -52,13 +52,18 @@
             }
         </style>
 
+        <!-- 
+            TODO: define the events and bindings you need to build
+            the layout explained in class. You will need to toggle
+            the drawer imperatively.
+        -->
         <app-drawer-layout>
-            <app-drawer id="drawer" slot="drawer" swipe-open opened={{opened}}>
-                <ps-scene-menu on-menu-item-click="_toggleMenu"></ps-scene-menu>
+            <app-drawer slot="drawer" swipe-open>
+                <ps-scene-menu></ps-scene-menu>
             </app-drawer>
             <app-header-layout has-scrolling-region>
                 <app-header slot="header">
-                    <ps-scene-toolbar on-menu-button-click="_toggleMenu" menu-open="[[opened]]"></ps-scene-toolbar>
+                    <ps-scene-toolbar></ps-scene-toolbar>
                 </app-header>
                 <paper-progress indeterminate disabled="[[!loading]]"></paper-progress>
                 <slot name="content"></slot>
@@ -96,12 +101,6 @@
                 if (this._activeAjax === 0) {
                     this.loading = false;
                 }
-            }
-            _toggleMenu() {
-                if (this.$.drawer.persistent) {
-                    return;
-                }
-                this.$.drawer.toggle();
             }
         }
         customElements.define(PsAppScene.is, PsAppScene);

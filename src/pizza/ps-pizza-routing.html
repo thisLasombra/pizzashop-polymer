@@ -13,13 +13,13 @@
                 height: 100%;
             }
         </style>
-
-        <iron-pages selected="[[page]]" attr-for-selected="name">
-            <ps-pizza-list name="list" pizzas="[[pizzas]]"></ps-pizza-list>
-            <ps-pizza-add name="add" pizzas="{{pizzas}}"></ps-pizza-add>
-            <ps-pizza-details name="details" pizza-id="{{id}}" pizzas="[[pizzas]]" active="[[_isActive('details')]]"></ps-pizza-details>
-            <ps-not-found name="fallback"></ps-not-found>
-        </iron-pages>
+        <!-- 
+            TODO: setup iron pages to achieve the following configuration:
+            ps-pizza-list /pizzas
+            ps-pizza-add /pizzas/add
+            ps-pizza-details /pizzas/details
+            ps-not-found fallback
+         -->
 
     </template>
     <script>   
@@ -58,17 +58,8 @@
                 return page === this.page;
             }
             _setupRoutes() {
-                const router = new Router();
-                router.on('/pizzas', () =>
-                    this.page = 'list');
-                router.on('/pizzas/add', () => {
-                    this.page = 'add';
-                })
-                router.on('/pizzas/:id', (id) => {
-                    this.setProperties({id, page: 'details'});
-                });
-                rotuer.notfound = () => this.page = 'fallback';
-                router.init();
+                // TODO: confiture a new director router to
+                // manage the pizzas module
             }
             _pageChanged() {
                 if (this.page === this.defaultPage) {

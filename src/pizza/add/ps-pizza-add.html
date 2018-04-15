@@ -8,7 +8,6 @@
 <link rel="import" href="/bower_components/iron-selector/iron-multi-selectable.html">
 <link rel="import" href="/bower_components/polymer/lib/elements/dom-repeat.html">
 <link rel="import" href="../../core/styles/ps-styles.html">
-<!-- <link rel="import" href="../ps-pizza-store.html"> -->
 
 <!-- 
     This component is terrible, and we could refactorize it to be much better
@@ -97,7 +96,6 @@
             }
         </style>
 
-        <!-- <ps-pizza-store id="pizzaStore"></ps-pizza-store> -->
         <!-- 
             change iron-ajax by <ps-ingredients-service ingredients="{{ingredients}}"></ps-ajax-service>
         -->
@@ -205,10 +203,6 @@
             }
             _onResponse(ev, request) {
                 this.push('pizzas', request.response);
-
-                // below using the store
-
-                // this.$.pizzaStore.addPizza(request.response);
             }
             _ingredientsToString() {
                 return this.selectedIngredients.map((el) => el.innerText).join('; ');
