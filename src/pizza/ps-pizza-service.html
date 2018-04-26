@@ -1,0 +1,31 @@
+<script>
+    (function(){
+        class PizzaService {
+            constructor(){
+                this._pizzas = [];
+                this._callbacks = [];
+            }
+            get pizzas(){
+                return this._pizzas;
+            }
+            set pizzas(value){
+                this._pizzas = value;
+                this.onPizzasChange();
+            }
+            add(pizza){
+                this._pizzas.push(pizza);
+                this.onPizzasChange();
+            }
+            getById(id){
+                return this._pizzas.find((pizza)=>pizza.id === id);
+            }
+            subscribe(callback){
+                this._callbacks.push(callback);
+            }
+            onPizzasChange(){
+                this._callbacks.forEach((cb)=>cb());
+            }
+        }
+        window.PizzaShop.pizzaService = new PizzaService();
+    }())
+</script>

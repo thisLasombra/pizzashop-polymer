@@ -23,7 +23,7 @@
 
         <div class="ps-pizza-list">
             <div class="ps-pizza-list__content horizontal">
-                <dom-repeat items="[[pizzas]]">
+                <dom-repeat id="repeat" items="[[pizzas]]">
                     <template>
                         <ps-pizza-list-card class="ps-pizza-list__content__pizza" pizza="[[item]]"> </ps-pizza-list-card>
                     </template>
@@ -35,7 +35,23 @@
 
     <script>
         class PsPizzaList extends Polymer.Element {
-            static get is() {return 'ps-pizza-list';}
+            static get is() { return 'ps-pizza-list'; }
+            static get properties() {
+                return {
+                    pizzas: Array
+                };
+            }
+            ready() {
+                super.ready();
+                this._setPizzas();
+                window.PizzaShop.pizzaService.subscribe(
+                    () => this._setPizzas()
+                );
+            }
+            _setPizzas(){
+                this.pizzas = window.PizzaShop.pizzaService.pizzas;
+                this.$.repeat.render();
+            }
         }
 
         customElements.define(PsPizzaList.is, PsPizzaList);

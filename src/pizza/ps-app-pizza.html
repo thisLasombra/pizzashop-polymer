@@ -1,5 +1,6 @@
 <link rel="import" href="/bower_components/polymer/polymer-element.html">
 <link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="./ps-pizza-service.html">
 <link rel="import" href="./ps-pizza-routing.html">
 
 <!-- 
@@ -10,8 +11,8 @@
 
 <dom-module id="ps-app-pizza">
     <template>
-        <iron-ajax auto url="[[_baseUrl]]/pizzas" last-response="{{pizzas}}"></iron-ajax>
-        <ps-pizza-routing pizzas="{{pizzas}}"></ps-pizza-routing>
+        <iron-ajax auto url="[[_baseUrl]]/pizzas" on-response="_onPizzas"></iron-ajax>
+        <ps-pizza-routing></ps-pizza-routing>
     </template>
     <script>
 
@@ -19,16 +20,14 @@
             static get is() {return 'ps-app-pizza';}
             static get properties() {
                 return {
-                    pizzas: {
-                        type: Array,
-                        value: () => [],
-                        notify: true
-                    },
                     _baseUrl: {
                         type: String,
                         value: PizzaShop.config.baseUrl
                     }
                 };
+            }
+            _onPizzas(ev){
+                window.PizzaShop.pizzaService.pizzas = ev.detail.response;
             }
         }
         customElements.define(PsAppPizza.is, PsAppPizza);
